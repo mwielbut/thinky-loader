@@ -18,7 +18,7 @@ let loader = {
     {}
 };
 
-loader.initialize = function(config, callback)
+loader.initialize = function(config)
 {
     loader.thinky = new Thinky(config.thinky.rethinkdb);
 
@@ -29,12 +29,12 @@ loader.initialize = function(config, callback)
         {
             if (config.debug)
             {
-                console.log("DB Ready");
+                console.dir("DB Ready");
             }
 
             if (config.debug)
             {
-                console.log("Loading models from path: " + config.modelsPath);
+                console.dir("Loading models from path: " + config.modelsPath);
             }
 
             let definitions = requireAll(
@@ -76,12 +76,8 @@ loader.initialize = function(config, callback)
                 definition.init(model);
             });
 
-            if (callback)
-                callback(null, loader);
-
             return loader;
-        })
-        .catch(callback);
+        });
 
 };
 
