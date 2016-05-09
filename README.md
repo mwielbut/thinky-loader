@@ -61,7 +61,7 @@ orm.initialize(ormConfig)
 
 
 ## Model file configuration  
-Create a file for each thinky model object with the contents below. The hook will scan each model definition and load it on startup.
+Create a file for each thinky model object with the contents below. The model definition should mirror the same schema definition you would normally use in thinky.
 
 ```javascript
 module.exports = function()
@@ -79,9 +79,9 @@ module.exports = function()
             year: type.string(),
             idOwner: type.string()
         },
-            options  : {
-                enforce_extra: "none"
-            },
+        options  : {
+            enforce_extra: "none"
+        },
 
 
         // set up any relationships, indexes or function definitions here
