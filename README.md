@@ -120,4 +120,5 @@ Anyone using sails-hook-thinky can perform the following steps to migrate over:
 2. Make sure `thinky` is in your `package.json`
 3. Update your thinky configuration with the example configuration above
 4. Add `orm.initialize(ormConfig)` to your `bootstrap.js` file. This loader will no longer load automatically on startup like a hook. This is really for the best...
-5. Update your model definition files.
+5. Update your model definition files to the new format
+6. Models and thinky are no longer available as global variabels. You'll need to add `let orm = require('thinky-loader');` to any file the requires orm access and reference your model instances directly via `orm.models.<NAME>`.
