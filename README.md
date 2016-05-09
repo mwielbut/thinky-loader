@@ -1,0 +1,113 @@
+# thinky-loader
+A general purpose model loader for Thinky ORM for RethinkDB. _See also migrating from sails-hook-thinky section below._ 
+
+## Installation
+
+`npm install thinky-loader`
+
+or add to `package.json`
+
+## Usage
+
+This package configures the thinky orm and initializes the model files in the specified directory. Once configured any controllers or services can simply `require('thinky-loader')` to access thinky and model instances.
+
+_In your bootstap or initialization file:_
+```javascript
+let orm = require('thinky-loader');
+
+let ormConfig = {
+                debug     : false, 
+                modelsPath: 'data-models/thinky',
+                thinky    : {
+                        rethinkdb: {
+                                host        : 'db-0',
+                                port        : 28015,
+                                authKey     : "",
+                                db          : "master",
+                                timeoutError: 5000,
+                                buffer      : 5,
+                                max         : 1000,
+                                timeoutGb   : 60 * 60 * 1000
+                        }
+                }
+        };
+
+// returns a promise
+orm.initialize(ormConfig).then(() => console.log('Ready!')); 
+```
+
+## Configuration
+
+It is recommended that you allocate a directory for your thinky model definitions, for example `data-models/thinky`. The loader will look in the specified directory and load each model definition.
+
+_In a bootstapping or initialization file (could be your `app.js`!):_
+```javascript
+let orm = require('thinky-loader');
+
+let ormConfig = {
+                debug     : false, 
+                modelsPath: 'data-models/thinky',
+                thinky    : {
+                        rethinkdb: {
+                                host        : 'db-0',
+                                port        : 28015,
+                                authKey     : "",
+                                db          : "master",
+                                timeoutError: 5000,
+                                buffer      : 5,
+                                max         : 1000,
+                                timeoutGb   : 60 * 60 * 1000
+                        }
+                }
+        };
+
+// returns a promise
+orm.initialize(ormConfig).then(() => console.log('Ready!')); 
+```
+
+
+
+## Model file configuration  
+Create a file for each thinky model object with the contents below. The hook will scan each model definition and load it on startup.
+
+```javascript
+var type = thinky.type;
+
+module.exports = {
+
+    tableName: "Car", // optional, will use name of file if not present
+    schema: {
+        id: type.string(),
+        type: type.string(),
+        year: type.string(),
+        idOwner: type.string()
+    },
+    options: {},
+
+    // set up any relationships, indexes or function definitions here
+    init: function(model) {
+        model.belongsTo(Person, "owner", "idOwner", "id");
+        
+        model.ensureIndex("type");
+        
+        model.define("isDomestic", function() {
+            return this.type === 'Ford' || this.type === 'GM';
+        });
+    }
+
+};
+```
+*Also see `examples` directory for sample model files.
+
+
+## Migrating from [sails-hook-thinky](https://github.com/mwielbut/sails-hook-thinky)
+
+This package configures the thinky orm and initializes the model files in the specified directory. 
+
+Make model calls from any service, controller, policy, etc. just as you would normally. No need to require thinky or any model files.
+
+```javascript
+Post.getJoin().then(function(posts) {
+     console.log(posts);
+ });
+```
