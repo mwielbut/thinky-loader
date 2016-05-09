@@ -1,6 +1,6 @@
 {
   "name": "thinky-loader",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A general purpose model loader for Thinky ORM for RethinkDB.",
   "main": "index.js",
   "author": "mwielbut",
