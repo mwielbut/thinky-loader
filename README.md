@@ -1,24 +1,33 @@
 # thinky-loader
 A general purpose model loader for Thinky ORM for RethinkDB. _See also migrating from sails-hook-thinky section below._ 
 
+## Why
+
+Rethinkdb is awesome and Thinky is a great ORM for it. But loading multiple model definition files and making them available in a large distributed Node.js applicaiton could be better. 
+
 ## Installation
 
 `npm install thinky-loader`
 
 or add to `package.json`
 
+*Also make sure to include `thinky` in your package.json as the loader does not make any assumptions as to the version of thinky you're using.
+
 ## Usage
 
-This package configures the thinky orm and initializes the model files in the specified directory. Once configured any controllers or services can simply `require('thinky-loader')` to access instantiated thinky and model instances.
+`thinky-loader` configures the thinky orm and initializes the model files in the specified directory. Once initialized any controllers or services in your app can simply `require('thinky-loader')` to access instantiated thinky and model instances. It's basically just a [singleton](https://en.wikipedia.org/wiki/Singleton_pattern) for thinky.
 
 _In a controller, for example:_
 ```javascript
 let orm = require('thinky-loader');
 
+// Post has been loaded and can be referenced at orm.models
 orm.models.Post.getJoin().then(function(posts) {
      console.log(posts);
  });
 
+// Customer has been loaded and can be referenced at orm.models
+// The instance of thinky is available at orm.thinky
 orm.models.Customer.orderBy({
     index: orm.thinky.r.desc("createdAt")
 }).run().then(function(customers) {
@@ -29,7 +38,7 @@ orm.models.Customer.orderBy({
 
 ## Configuration
 
-It is recommended that you allocate a directory for your thinky model definitions, for example `data-models/thinky`. The loader will look in the specified directory and load each model definition.
+It is recommended that you carve out a directory for your thinky model definitions, for example `data-models/thinky` and keep each model in a separate file. The loader will look in the specified directory and load each model definition.
 
 _In a bootstapping or initialization file (could be your `app.js`!):_
 ```javascript
