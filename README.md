@@ -112,12 +112,12 @@ module.exports = function()
 
 ## Migrating from [sails-hook-thinky](https://github.com/mwielbut/sails-hook-thinky)
 
-This package configures the thinky orm and initializes the model files in the specified directory. 
+`thinky-loader` is the recommended replacement for `sails-hook-thinky`. It provides a standard loader for Sailsjs and non-Sailsjs projects and removes the use of global variables the are common within Sailsjs.
 
-Make model calls from any service, controller, policy, etc. just as you would normally. No need to require thinky or any model files.
+Anyone using sails-hook-thinky can perform the following steps to migrate over:
 
-```javascript
-Post.getJoin().then(function(posts) {
-     console.log(posts);
- });
-```
+1. Remove `sails-hook-thinky` and add `thinky-loader` in your `package.json`
+2. Make sure `thinky` is in your `package.json`
+3. Update your thinky configuration with the example configuration above
+4. Add `orm.initialize(ormConfig)` to your `bootstrap.js` file. This loader will no longer load automatically on startup like a hook. This is really for the best...
+5. Update your model definition files.
