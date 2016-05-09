@@ -9,31 +9,22 @@ or add to `package.json`
 
 ## Usage
 
-This package configures the thinky orm and initializes the model files in the specified directory. Once configured any controllers or services can simply `require('thinky-loader')` to access thinky and model instances.
+This package configures the thinky orm and initializes the model files in the specified directory. Once configured any controllers or services can simply `require('thinky-loader')` to access instantiated thinky and model instances.
 
-_In your bootstap or initialization file:_
+_In a controller, for example:_
 ```javascript
 let orm = require('thinky-loader');
 
-let ormConfig = {
-                debug     : false, 
-                modelsPath: 'data-models/thinky',
-                thinky    : {
-                        rethinkdb: {
-                                host        : 'db-0',
-                                port        : 28015,
-                                authKey     : "",
-                                db          : "master",
-                                timeoutError: 5000,
-                                buffer      : 5,
-                                max         : 1000,
-                                timeoutGb   : 60 * 60 * 1000
-                        }
-                }
-        };
+orm.models.Post.getJoin().then(function(posts) {
+     console.log(posts);
+ });
 
-// returns a promise
-orm.initialize(ormConfig).then(() => console.log('Ready!')); 
+orm.models.Customer.orderBy({
+    index: orm.thinky.r.desc("createdAt")
+}).run().then(function(customers) {
+     console.log(customers);
+});
+                  
 ```
 
 ## Configuration
@@ -61,8 +52,10 @@ let ormConfig = {
                 }
         };
 
-// returns a promise
-orm.initialize(ormConfig).then(() => console.log('Ready!')); 
+// returns a promise when configured
+orm.initialize(ormConfig)
+.then(() => console.log('Ready!'))
+.catch(() => console.log('Darn!'));
 ```
 
 
@@ -71,30 +64,38 @@ orm.initialize(ormConfig).then(() => console.log('Ready!'));
 Create a file for each thinky model object with the contents below. The hook will scan each model definition and load it on startup.
 
 ```javascript
-var type = thinky.type;
+module.exports = function()
+{
+    let thinky = this.thinky;
+    let type   = this.thinky.type;
+    let models = this.models;
 
-module.exports = {
+    return {
 
-    tableName: "Car", // optional, will use name of file if not present
-    schema: {
-        id: type.string(),
-        type: type.string(),
-        year: type.string(),
-        idOwner: type.string()
-    },
-    options: {},
+        tableName: "Car",
+        schema: {
+            id: type.string(),
+            type: type.string(),
+            year: type.string(),
+            idOwner: type.string()
+        },
+            options  : {
+                enforce_extra: "none"
+            },
 
-    // set up any relationships, indexes or function definitions here
-    init: function(model) {
-        model.belongsTo(Person, "owner", "idOwner", "id");
-        
-        model.ensureIndex("type");
-        
-        model.define("isDomestic", function() {
-            return this.type === 'Ford' || this.type === 'GM';
-        });
-    }
 
+        // set up any relationships, indexes or function definitions here
+        init: function(model) {
+            model.belongsTo(models.Person, "owner", "idOwner", "id");
+            
+            model.ensureIndex("type");
+            
+            model.define("isDomestic", function() {
+                return this.type === 'Ford' || this.type === 'GM';
+            });
+        }
+
+    };
 };
 ```
 *Also see `examples` directory for sample model files.
