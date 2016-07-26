@@ -18,9 +18,9 @@ let loader = {
     {}
 };
 
-loader.initialize = function(config)
+loader.initialize = function(config, thinky)
 {
-    loader.thinky = new Thinky(config.thinky.rethinkdb);
+    loader.thinky = thinky || new Thinky(config.thinky.rethinkdb);
 
     return loader
         .thinky
