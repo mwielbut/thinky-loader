@@ -62,7 +62,7 @@ let ormConfig = {
         };
 
 // returns a promise when configured
-orm.initialize(ormConfig)
+orm.initialize(ormConfig) // you can also optionally pass an instance of thinky: [orm.initialize(ormConfig, thinky)] for additional configuration.
 .then(() => console.log('Ready!'))
 .catch(() => console.log('Darn!'));
 ```
